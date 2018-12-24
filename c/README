@@ -1,0 +1,4 @@
+Dependencies:
+
+Compiliation: (Verified using Arch Linux) 
+    g++ -o minesweeper minesweeper.c 
