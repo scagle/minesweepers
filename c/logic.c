@@ -1,38 +1,11 @@
 #include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
+#include "logic.h"
 
-typedef enum Tiles
-{
-//    0     1    2     3     4     5     6     7     8      9   
-     NONE, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, BOMB 
-} Tile;
-
-typedef enum Overlays
-{
-//   0     1     2 
-    FOG, CLEAR, FLAG
-} Overlay;
-
-typedef enum Inputs
-{
-//   0     1     2 
-    UP,  DOWN, LEFT, RIGHT, REVEAL, PLACEFLAG
-} Input;
-
-void randomize();
-void print_game();
-Tile get_adj_bombs(int x, int y);
-void reveal(int x, int y);
-void handle_input(Input action, int x, int y);
-
-// TODO: Make non-square boards work
-const int GAME_WIDTH    =  40;
-const int GAME_HEIGHT   =  40;
-const int NUM_BOMBS     =  50;
+#define GAME_WIDTH   40
+#define GAME_HEIGHT  40
+#define NUM_BOMBS    50
 
 Tile    tiles   [GAME_WIDTH][GAME_HEIGHT]; // Tile information 
 Overlay overlays[GAME_WIDTH][GAME_HEIGHT]; // Overlay information 
@@ -40,9 +13,6 @@ Overlay overlays[GAME_WIDTH][GAME_HEIGHT]; // Overlay information
 int cursor_x = 5;
 int cursor_y = 5;
 
-//*****************************************************************************
-//*                              Functions                                    *
-//*****************************************************************************
 
 void randomize()
 {
@@ -77,13 +47,14 @@ void randomize()
     }
 
     // Increment adjacent tiles
+    //   (go through each empty tile, and assign it the #of_adjacent_bombs)
     for (x = 0; x < GAME_WIDTH; x++)
     {
         for (y = 0; y < GAME_HEIGHT; y++)
         {
             if (tiles[x][y] == NONE)
             {
-                tiles[x][y] = get_adj_bombs(x, y);
+                tiles[x][y] = get_adj_bombs(x, y); // [0-8], 0=NONE
             }
         }
     }
@@ -178,33 +149,6 @@ Tile get_adj_bombs(int x, int y)
     return result;
 }
 
-void print_game()
-{
-    int x, y;
-    for (x = 0; x < GAME_WIDTH; x++)
-    {
-        for (y = 0; y < GAME_HEIGHT; y++)
-        {
-            char result;
-            switch (overlays[x][y])
-            {
-                case FOG: 
-                    result = '?';
-                    break;
-                case CLEAR: 
-                    result = tiles[x][y] + '0';  // Convert to char
-                    if (result == '0') 
-                        result = ' '; // only exception: clear = space
-                    break;
-                case FLAG: 
-                    result = 'F';
-                    break;
-            }
-            printf(" %c", result);
-        }
-        printf("\n");
-    }
-}
 void reveal(int x, int y)
 {
     // My inefficient, overly recursive method of revealing tiles
@@ -216,7 +160,7 @@ void reveal(int x, int y)
         {
             if (y == 0)             // Ignore Left & Top
             {
-                if (overlays[x+1][y  ] == FOG && tiles[x+1][y  ] < 9) reveal(x+1, y  );
+                if (overlays[x+1][y  ] == FOG && tiles[x+1][y  ] < 9) reveal(x+1, y  ); 
                 if (overlays[x  ][y+1] == FOG && tiles[x  ][y+1] < 9) reveal(x  , y+1);
                 if (overlays[x+1][y+1] == FOG && tiles[x+1][y+1] < 9) reveal(x+1, y+1);
             }
@@ -326,12 +270,34 @@ void handle_input(Input action, int x, int y)
     }
 }
 
-
-int main(int argc, char* args[])
+//*****************************************************************************
+//*                                 Utilities                                 *
+//*****************************************************************************
+// Print out the gameboard to console for debugging
+void print_game()
 {
-    randomize();
-    handle_input(REVEAL, cursor_x, cursor_y);
-    print_game();
-
-    return 0;
+    int x, y;
+    for (x = 0; x < GAME_WIDTH; x++)
+    {
+        for (y = 0; y < GAME_HEIGHT; y++)
+        {
+            char result;
+            switch (overlays[x][y])
+            {
+                case FOG: 
+                    result = '?';
+                    break;
+                case CLEAR: 
+                    result = tiles[x][y] + '0';  // Convert to char
+                    if (result == '0') 
+                        result = ' '; // only exception: clear = space
+                    break;
+                case FLAG: 
+                    result = 'F';
+                    break;
+            }
+            printf(" %c", result);
+        }
+        printf("\n");
+    }
 }

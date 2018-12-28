@@ -1,4 +1,4 @@
 Dependencies:
 
 Compiliation: (Verified using Arch Linux) 
-    g++ -o minesweeper.out minesweeper.c 
+    g++ -o main.out main.c 
