@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include "logic.h"
 
@@ -12,7 +13,6 @@ Overlay overlays[GAME_WIDTH][GAME_HEIGHT]; // Overlay information
 
 int cursor_x = 5;
 int cursor_y = 5;
-
 
 void randomize()
 {
@@ -269,6 +269,16 @@ void handle_input(Input action, int x, int y)
             break;
     }
 }
+
+//Tile *get_tiles()
+//{
+//    return &tiles;
+//}
+//
+//Overlay *get_overlays()
+//{
+//    return &overlays;
+//}
 
 //*****************************************************************************
 //*                                 Utilities                                 *

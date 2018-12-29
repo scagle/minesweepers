@@ -28,10 +28,12 @@ typedef enum Overlays
     FLAG    // 2
 } Overlay;
 
-void randomize     (                              );
-Tile get_adj_bombs ( int x        , int y         );
-void reveal        ( int x        , int y         );
-void handle_input  ( Input action , int x , int y );
-void print_game    (                              );
+void      randomize     (                              );
+Tile      get_adj_bombs ( int x        , int y         );
+void      reveal        ( int x        , int y         );
+void      handle_input  ( Input action , int x , int y );
+void      print_game    (                              );
+Tile     *get_tiles     (                              );
+Overlay  *get_overlays  (                              );
 
 #endif
