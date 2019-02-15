@@ -6,25 +6,19 @@
 #include <string.h>
 #include <time.h>
 
-#include "logic.h"
+#include "global.h"  // Contains global settings/structs/enums
+#include "logic.h"   // Controls minesweeper logic
 
-#define GAME_WIDTH    40
-#define GAME_HEIGHT   40
-#define SCREEN_WIDTH  600
-#define SCREEN_HEIGHT 480
+// Function definitions
+//[[void         sdl_board_init (SDL_Rect sdl_board[][GAME_SIZE]);
+//[[bool         graphics_init  (                               );
+//[[bool         main_loop      (                               );
+//[[void         draw_board     ( SDL_Surface *screen           );
+//[[void         close          (                               );
 
-void         board_init    (                     );
-bool         graphics_init (                     );
-bool         main_loop     (                     );
-void         draw_board    ( SDL_Surface *screen );
-//[[bool         loadMedia     (                     );
-//[[SDL_Surface* loadSurface   ( char *path          );
-void         close         (                     );
-
-SDL_Window*  g_window          = NULL;
-SDL_Surface* screen            = NULL;    // Visual Board
-SDL_Surface* canvas       = NULL;    // Next Visual Board (for blit)
-SDL_Rect     board[GAME_WIDTH][GAME_HEIGHT];
+//[[SDL_Window*  g_window  = NULL;
+//[[SDL_Surface* screen    = NULL;    // Visual Board
+//[[SDL_Surface* canvas    = NULL;    // Next Visual Board (for blit)
 
 //*****************************************************************************
 //*                                 Main                                      *
@@ -32,91 +26,97 @@ SDL_Rect     board[GAME_WIDTH][GAME_HEIGHT];
 
 int main(int argc, char* args[])
 {
+//[[    SDL_Rect sdl_board[GAME_SIZE][GAME_SIZE];
     // initializations
-    board_init();
-    graphics_init();
+//[[    sdl_board_init(sdl_board);
+    Board board = create_board();
+    randomize_board(board);
+    print_game(board);
 
-    // start game
-    main_loop();
-
+    handle_input(REVEAL, board, 5, 5);
+//[[    graphics_init();
+//[[
+//[[    // start game
+//[[    main_loop();
+//[[
     return 0;
 }
 
-bool main_loop()
-{
-    int cursor_x = 5;
-    int cursor_y = 5;
-    if( !graphics_init() )
-    {
-        printf( "Failed to initialize!\n" );
-    }
-    else
-    {
+//[[bool main_loop()
+//[[{
+//[[    int cursor_x = 5;
+//[[    int cursor_y = 5;
+//[[    if( !graphics_init() )
+//[[    {
+//[[        printf( "Failed to initialize!\n" );
+//[[    }
+//[[    else
+//[[    {
 //[[        if(!loadMedia())           //Load media
 //[[        {
 //[[            printf( "Failed to load media!\n" );
 //[[        }
 //[[        else
 //[[        {   
-            bool quit = false;     // Main loop flag
-            SDL_Event e;           // Event handler
-
-            while(!quit)                           // While application is running
-            {
-                while(SDL_PollEvent(&e) != 0)      // Handle events on queue
-                {
-                    if(e.type == SDL_QUIT)         // User requests quit
-                    {
-                        printf("Goodbye!");
-                        quit = true;
-                    }
-                    else if(e.type == SDL_KEYDOWN) // User presses a key
-                    {
-                        switch(e.key.keysym.sym)   // Select surfaces based on key press
-                        {
-                            case SDLK_w: handle_input(UP    , cursor_x , cursor_y);
-                                         break;
-                            case SDLK_a: handle_input(LEFT  , cursor_x , cursor_y); 
-                                         break;
-                            case SDLK_s: handle_input(DOWN  , cursor_x , cursor_y); 
-                                         break;
-                            case SDLK_d: handle_input(RIGHT , cursor_x , cursor_y); 
-                                         break;
-                            case SDLK_q: quit = true;
-                                         break;
-                            default:     break;
-                        }
-                    }
-                }
-
-                draw_board(canvas);           // Draw the board
-
-                //Apply the current image
-                SDL_BlitSurface(screen, NULL, canvas, NULL);
-            
-                //Update the surface
-                SDL_UpdateWindowSurface( g_window );
-            }
+//[[            bool quit = false;     // Main loop flag
+//[[            SDL_Event e;           // Event handler
+//[[
+//[[            while(!quit)                           // While application is running
+//[[            {
+//[[                while(SDL_PollEvent(&e) != 0)      // Handle events on queue
+//[[                {
+//[[                    if(e.type == SDL_QUIT)         // User requests quit
+//[[                    {
+//[[                        printf("Goodbye!");
+//[[                        quit = true;
+//[[                    }
+//[[                    else if(e.type == SDL_KEYDOWN) // User presses a key
+//[[                    {
+//[[                        switch(e.key.keysym.sym)   // Select surfaces based on key press
+//[[                        {
+//[[                            case SDLK_w: handle_input(UP    , cursor_x , cursor_y);
+//[[                                         break;
+//[[                            case SDLK_a: handle_input(LEFT  , cursor_x , cursor_y); 
+//[[                                         break;
+//[[                            case SDLK_s: handle_input(DOWN  , cursor_x , cursor_y); 
+//[[                                         break;
+//[[                            case SDLK_d: handle_input(RIGHT , cursor_x , cursor_y); 
+//[[                                         break;
+//[[                            case SDLK_q: quit = true;
+//[[                                         break;
+//[[                            default:     break;
+//[[                        }
+//[[                    }
+//[[                }
+//[[
+//[[                draw_board(canvas);           // Draw the sdl_board
+//[[
+//[[                //Apply the current image
+//[[                SDL_BlitSurface(screen, NULL, canvas, NULL);
+//[[            
+//[[                //Update the surface
+//[[                SDL_UpdateWindowSurface( g_window );
+//[[            }
 //[[        }
-    }
-
-    //Free resources and close SDL
-    //print_game();
-    close();
-
-    return 0;
-}
+//[[    }
+//[[
+//[[    //Free resources and close SDL
+//[[    //print_game();
+//[[    close();
+//[[
+//[[    return 0;
+//[[}
 
 //*****************************************************************************
 //*                              Functions                                    *
 //*****************************************************************************
-void draw_board(SDL_Surface *surf)
-{
-    const SDL_Rect rect = {0, 0, 50, 50};
-
-    SDL_FillRect(surf, &rect, SDL_MapRGB(surf->format, 255, 0, 0));
-}
-
+//[[void draw_board(SDL_Surface *surf)
+//[[{
+//[[    const SDL_Rect rect = {0, 0, 50, 50};
+//[[
+//[[    SDL_FillRect(surf, &rect, SDL_MapRGB(surf->format, 255, 0, 0));
+//[[}
+//[[
 //[[ bool loadMedia()
 //[[ {
 //[[    //Loading success flag
@@ -138,75 +138,75 @@ void draw_board(SDL_Surface *surf)
 //[[    return loaded_surface;
 //[[ }
 
-void close()
-{
-    //Deallocate surfaces
+//[[void close()
+//[[{
+//[[    //Deallocate surfaces
 //[[    SDL_FreeSurface(g_current_surface);
 //[[    SDL_FreeSurface(g_screen_surface);
 //[[    g_current_surface = NULL;
 //[[    g_screen_surface = NULL;
-    SDL_FreeSurface(screen);
-    SDL_FreeSurface(canvas);
-    screen      = NULL;
-    canvas = NULL;
-
-    //Destroy window
-    SDL_DestroyWindow(g_window);
-    g_window = NULL;
-
-    //Quit SDL subsystems
-    SDL_Quit();
-}
+//[[    SDL_FreeSurface(screen);
+//[[    SDL_FreeSurface(canvas);
+//[[    screen      = NULL;
+//[[    canvas = NULL;
+//[[
+//[[    //Destroy window
+//[[    SDL_DestroyWindow(g_window);
+//[[    g_window = NULL;
+//[[
+//[[    //Quit SDL subsystems
+//[[    SDL_Quit();
+//[[}
 
 //*****************************************************************************
 //*                             Initializations                               *
 //*****************************************************************************
-void board_init()
-{
-    int x, y;
-    const int TILE_WIDTH  = SCREEN_WIDTH  / GAME_WIDTH ;
-    const int TILE_HEIGHT = SCREEN_HEIGHT / GAME_HEIGHT;
-    for (x = 0; x < GAME_WIDTH; x++)
-    {
-        for (y = 0; y < GAME_HEIGHT; y++)
-        {
-            board[x][y].x = x * TILE_WIDTH  ;
-            board[x][y].y = y * TILE_HEIGHT ;
-            board[x][y].w =     TILE_WIDTH  ;
-            board[x][y].h =     TILE_HEIGHT ;
-        }
-    }
-    randomize();
-}
-
-bool graphics_init()
-{
-    //Initialization flag
-    bool success = true;
-
-    //Initialize SDL
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
-    {
-        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
-        success = false;
-    }
-    else
-    {
-        //Create window
-        g_window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
-        if( g_window == NULL )
-        {
-            printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
-            success = false;
-        }
-        else
-        {
-            //Get window surface
-            screen = SDL_GetWindowSurface( g_window );
-            canvas = SDL_CreateRGBSurface(0, 600, 480, 32, 0, 0, 0, 0);
-        }
-    }
-
-    return success;
-}
-
+//[[void sdl_board_init(SDL_Rect sdl_board[][GAME_SIZE])
+//[[{
+//[[    int x, y;
+//[[    const int TILE_WIDTH  = SCREEN_WIDTH  / GAME_SIZE ;
+//[[    const int TILE_HEIGHT = SCREEN_HEIGHT / GAME_SIZE;
+//[[    for (x = 0; x < GAME_SIZE; x++)
+//[[    {
+//[[        for (y = 0; y < GAME_SIZE; y++)
+//[[        {
+//[[            sdl_board[x][y].x = x * TILE_WIDTH  ;
+//[[            sdl_board[x][y].y = y * TILE_HEIGHT ;
+//[[            sdl_board[x][y].w =     TILE_WIDTH  ;
+//[[            sdl_board[x][y].h =     TILE_HEIGHT ;
+//[[        }
+//[[    }
+//[[    randomize();
+//[[}
+//[[
+//[[bool graphics_init()
+//[[{
+//[[    //Initialization flag
+//[[    bool success = true;
+//[[
+//[[    //Initialize SDL
+//[[    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+//[[    {
+//[[        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+//[[        success = false;
+//[[    }
+//[[    else
+//[[    {
+//[[        //Create window
+//[[        g_window = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+//[[        if( g_window == NULL )
+//[[        {
+//[[            printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+//[[            success = false;
+//[[        }
+//[[        else
+//[[        {
+//[[            //Get window surface
+//[[            screen = SDL_GetWindowSurface( g_window );
+//[[            canvas = SDL_CreateRGBSurface(0, 600, 480, 32, 0, 0, 0, 0);
+//[[        }
+//[[    }
+//[[
+//[[    return success;
+//[[}
+//[[
