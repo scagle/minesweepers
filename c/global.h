@@ -2,7 +2,7 @@
 #define GLOBAL_H
 
 #define GAME_SIZE      40 // How many squares on game board? ( x + y  )
-#define NUM_MINES      50 // How many mines on game board?   ( total  )
+#define NUM_MINES     200 // How many mines on game board?   ( total  )
 #define SCREEN_WIDTH  600 // How many pixels on screen?      ( width  )
 #define SCREEN_HEIGHT 480 // How many pixels on screen?      ( height )
 
