@@ -7,7 +7,7 @@
 #define GRAPHICS_WIDTH  640
 #define GRAPHICS_HEIGHT 480
 
-void        graphics_init  (                                        );
+int         graphics_init  (                                        );
 void        graphics_close (                                        );
 void        render         (Board board, int cursor_x, int cursor_y );
 

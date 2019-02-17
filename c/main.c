@@ -14,7 +14,12 @@ int main(int argc, char* args[])
 {
     // TODO: Incorporate Rendering of SDL
     // Graphics Initializations
-    graphics_init();
+    int error = graphics_init();
+    if (error)
+    {
+        printf("Initialization failed!");
+        return 1;
+    }
 
     // Board Initialization
     Board board = create_board();
