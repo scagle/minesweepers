@@ -10,20 +10,19 @@
 #include "logic.h"    // Controls minesweeper logic
 #include "graphics.h" // Controls graphics
 
-// Function definitions
-Board board_init(void);
-
 int main(int argc, char* args[])
 {
     // TODO: Incorporate Rendering of SDL
     // Graphics Initializations
-    SDL_Window *window = graphics_init();
+    graphics_init();
 
     // Board Initialization
-    Board board = board_init();
+    Board board = create_board();
+    board_init(&board);
 
     // Main Loop
-    int x = 0, y = 0;
+    int cursor_x = 0;
+    int cursor_y = 0;
     bool quit = false;
     SDL_Event event;
     while (!quit)
@@ -38,47 +37,24 @@ int main(int argc, char* args[])
             {
                 switch (event.key.keysym.sym)
                 {
-                    // Movement
-                    case SDLK_w:                 // Print board
-                        handle_input(UP, &board);
-                        break;
-                    case SDLK_a:                 // Print board
-                        handle_input(LEFT, &board);
-                        break;
-                    case SDLK_s:                 // Print board
-                        handle_input(DOWN, &board);
-                        break;
-                    case SDLK_d:                 // Print board
-                        handle_input(RIGHT, &board);
-                        break;
-                    // Actions
-                    case SDLK_f:                 // Print board
-                        handle_input(REVEAL, &board);
-                        break;
-                    // Extras 
-                    case SDLK_r:                 // Restart
-                        board = board_init();
-                        break;
-                    case SDLK_p:                 // Print board
-                        print_game(board);
-                        break;
-                    case SDLK_q:                 // Close window
+                    // System events
+                    case SDLK_q:
                         quit = true;
                         break;
+                    // Board events
+                    default:
+                        update(event, &board);
                 }
+                cursor_x = get_cursor_x();
+                cursor_y = get_cursor_y();
+                render(board, cursor_x, cursor_y);
             }
         }
+               
     }
 
     // Wrap things up
-    graphics_close(window);
+    graphics_close();
     return 0;
 }
 
-Board board_init()
-{
-    Board board = create_board();
-    make_board(&board);
-
-    return board;
-}
