@@ -5,19 +5,6 @@
 #define BORDER_V 50 // Top/Bottom border in pixels
 #define BORDER_H 50 // Left/Right border in pixels
 
-const SDL_Color BLACK      = {0   , 0   , 0  };
-const SDL_Color RED        = {255 , 0   , 0  };
-const SDL_Color GREEN      = {0   , 255 , 0  };
-const SDL_Color BLUE       = {0   , 0   , 255};
-const SDL_Color PURPLE     = {128 , 0   , 128};
-const SDL_Color MAROON     = {128 , 0   , 0  };
-const SDL_Color TURQUOISE  = { 64 , 224 , 208};
-const SDL_Color GRAY       = {128 , 128 , 128};
-
-const SDL_Color HEADER_COLOR  = BLACK; 
-const SDL_Color FOOTER_COLOR  = BLACK; 
-const SDL_Color TILE_COLORS[] = {BLACK, BLUE, GREEN, RED, PURPLE, MAROON, TURQUOISE, BLACK, GRAY, BLACK};
-//                                 0     1      2     3     4       5         6        7     8      9
 unsigned int GRID_WIDTH  = (SCREEN_WIDTH  - BORDER_H*2) / GAME_SIZE;  // Width of each tile
 unsigned int GRID_HEIGHT = (SCREEN_HEIGHT - BORDER_V*2) / GAME_SIZE;  // Height of each tile
 
@@ -60,9 +47,27 @@ int graphics_init()
             }
         }
     }
+    // Initializing colors
+    const SDL_Color BLACK      = {0   , 0   , 0  };
+    const SDL_Color RED        = {255 , 0   , 0  };
+    const SDL_Color GREEN      = {0   , 255 , 0  };
+    const SDL_Color BLUE       = {0   , 0   , 255};
+    const SDL_Color PURPLE     = {128 , 0   , 128};
+    const SDL_Color MAROON     = {128 , 0   , 0  };
+    const SDL_Color TURQUOISE  = { 64 , 224 , 208};
+    const SDL_Color GRAY       = {128 , 128 , 128};
+    SDL_Color HEADER_COLOR  = BLACK; 
+    SDL_Color FOOTER_COLOR  = BLACK; 
+    SDL_Color TILE_COLORS[]  = {BLACK, BLUE, GREEN, RED, PURPLE, MAROON, TURQUOISE, BLACK, GRAY, BLACK};
+
 
     // Initialize SDL Components 
     screenSurface = SDL_GetWindowSurface(window); //Get window surface
+    if (screenSurface == NULL)
+    {
+        printf("Screen Surface couldn't be created!\nSDL_ERROR: %s\n", SDL_GetError());
+        return 1;
+    }
     SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF)); //Fill the surface white
     SDL_UpdateWindowSurface(window); //Update the surface
     for (int x = 0; x < GAME_SIZE; x++) 
@@ -93,26 +98,26 @@ int graphics_init()
     }
 
     // Initialize header text object
-    sprintf(header.text, "Minesweeper");
+    sprintf(header.text, "%s", "Minesweeper");
     header.font    = header_font;
     header.color   = HEADER_COLOR; // Defined in graphics.h
     header.surface = TTF_RenderText_Solid(header.font, header.text, header.color);
     header.message = SDL_CreateTextureFromSurface(renderer, header.surface);
 
     // Initialize footer text object
-    sprintf(footer.text, "'w', 'a', 's', 'd' = move cursor | 'p' = reveal tile | 'o' = place flag | 'r' = restart game");
+    sprintf(footer.text, "%s", "'w', 'a', 's', 'd' = move cursor | 'p' = reveal tile | 'o' = place flag | 'r' = restart game");
     footer.font    = footer_font;
     footer.color   = FOOTER_COLOR; // Defined in graphics.h
     footer.surface = TTF_RenderText_Solid(footer.font, footer.text, footer.color);
     footer.message = SDL_CreateTextureFromSurface(renderer, footer.surface);
 
-    sprintf(gameover.text, "GAME OVER!");
+    sprintf(gameover.text, "%s", "GAME OVER!");
     gameover.font    = header_font;
     gameover.color   = RED; // Defined in graphics.h
     gameover.surface = TTF_RenderText_Solid(gameover.font, gameover.text, gameover.color);
     gameover.message = SDL_CreateTextureFromSurface(renderer, gameover.surface);
 
-    sprintf(won.text, "YOU WON!");
+    sprintf(won.text, "%s", "YOU WON!");
     won.font    = header_font;
     won.color   = GREEN; // Defined in graphics.h
     won.surface = TTF_RenderText_Solid(won.font, won.text, won.color);
@@ -123,13 +128,13 @@ int graphics_init()
         // tile #0 is included just in case a debugging situation arises (normally it's invisible/blank)
         // tile #9 is a mine so "M"
         char str[2];  // length is 2, because <one-digit-number> + \0 zero terminator
-        sprintf(str, "%d", i);
+        sprintf(str, "%c", i);
         if (i != 9)
-            sprintf(str, "%ld", i);
+            sprintf(str, "%c", i);
         else
-            sprintf(str, "M");
+            sprintf(str, "%s", "M");
 
-        sprintf(tile_objects[i].text, str);
+        sprintf(tile_objects[i].text, "%s", str);
         tile_objects[i].font    = tile_font; 
         tile_objects[i].color   = TILE_COLORS[i];
         tile_objects[i].surface = TTF_RenderText_Solid(tile_font, str, TILE_COLORS[i]);

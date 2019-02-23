@@ -17,8 +17,6 @@ int first_tile = 1; // flag to check if user lost on first turn
 Board create_board()
 {
     Board board;
-    board.tiles[GAME_SIZE][GAME_SIZE]; // Tile information 
-    board.overlays[GAME_SIZE][GAME_SIZE]; // Overlay information 
     return board;
 }
 
