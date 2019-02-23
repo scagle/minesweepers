@@ -6,11 +6,13 @@
 
 #include "logic.h"
 
-#define CURSOR_X_START 5
-#define CURSOR_Y_START 5
+#define CURSOR_X_START 0
+#define CURSOR_Y_START 0
 
 int cursor_x = CURSOR_X_START;
 int cursor_y = CURSOR_Y_START;
+int end = 0;
+int first_tile = 1; // flag to check if user lost on first turn
 
 Board create_board()
 {
@@ -66,40 +68,46 @@ void board_init(Board *board)
     }
 }
 
-void update(SDL_Event event, Board *board)
+int update(SDL_Event event, Board *board)
 {
-    switch (event.key.keysym.sym)
+    if (end == 0)
     {
-        // Movement
-        case SDLK_w:                 // Move Up
-            handle_input(UP, board);
-            break;
-        case SDLK_a:                 // Move Left
-            handle_input(LEFT, board);
-            break;
-        case SDLK_s:                 // Move Down
-            handle_input(DOWN, board);
-            break;
-        case SDLK_d:                 // Move Right
-            handle_input(RIGHT, board);
-            break;
-        // Actions
-        case SDLK_p:                 // Reveal
-            handle_input(REVEAL, board);
-            break;
-        case SDLK_o:                 // Toggle Flag
-            handle_input(TOGGLEFLAG, board);
-            break;
-        // Extras 
-        case SDLK_r:                 // Restart
-            printf("Restart\n");
-            *board = create_board();
-            board_init(board);
-            break;
-        //case SDLK_p:                 // Print board (debugging)
-        //    print_game(*board);
-        //    break;
+        switch (event.key.keysym.sym)
+        {
+            // Movement
+            case SDLK_w:                 // Move Up
+                end = handle_input(UP, board);
+                break;
+            case SDLK_a:                 // Move Left
+                end = handle_input(LEFT, board);
+                break;
+            case SDLK_s:                 // Move Down
+                end = handle_input(DOWN, board);
+                break;
+            case SDLK_d:                 // Move Right
+                end = handle_input(RIGHT, board);
+                break;
+            // Actions
+            case SDLK_p:                 // Reveal
+                end = handle_input(REVEAL, board);
+                break;
+            case SDLK_o:                 // Toggle Flag
+                end = handle_input(TOGGLEFLAG, board);
+                break;
+            //case SDLK_p:                 // Print board (debugging)
+            //    print_game(*board);
+            //    break;
+        }
     }
+    if (event.key.keysym.sym == SDLK_r)
+    {
+        end = 0; // Reset ended game
+        first_tile = 1; // Reset first tile flag
+        *board = create_board();
+        board_init(board);
+    }
+
+    return end;
 }
 
 Tile get_adj_mines(Board board, int x, int y)
@@ -286,8 +294,56 @@ void reveal(Board *board, int x, int y)
     }
 }
 
-void handle_input(Input action, Board *board)
+void reveal_all(Board *board) // Reveals all tiles in event of game-over
 {
+    for (int x = 0; x < GAME_SIZE; x++)
+        for (int y = 0; y < GAME_SIZE; y++)
+            board->overlays[x][y] = CLEAR;
+}
+
+void relocate_mine(Board *board, int cursor_x, int cursor_y) 
+{
+    // Handles situation if dead on first tile
+    // Will do what official minesweeper does by simply moving the bomb somewhere else
+    int escape = 0;
+    for (int x = 0; x < GAME_SIZE; x++)
+    {
+        for (int y = 0; y < GAME_SIZE; y++)
+        {
+            if (board->tiles[x][y] != 9) // if not mine
+            {
+                board->tiles[x][y] = 9;  // add mine at free spot
+                board->tiles[cursor_x][cursor_y] = 0; // remove mine at cursor
+                escape = 1;
+                break;
+            }
+        }
+        if (escape) // break out of both loops if flag is set
+            break;
+    }
+    // Reset all non-bomb tiles to zero, so they can be re-numbered
+    for (int x = 0; x < GAME_SIZE; x++)
+        for (int y = 0; y < GAME_SIZE; y++)
+            if (board->tiles[x][y] != 9)
+                board->tiles[x][y] = 0;  // add mine at free spot
+
+    // Reset all numbering on tiles
+    //   (go through each empty tile, and assign it the #of_adjacent_mines)
+    for (int x = 0; x < GAME_SIZE; x++)
+    {
+        for (int y = 0; y < GAME_SIZE; y++)
+        {
+            if (board->tiles[x][y] == NONE)
+            {
+                board->tiles[x][y] = get_adj_mines(*board, x, y); // [0-8], 0=NONE
+            }
+        }
+    }
+}
+
+int handle_input(Input action, Board *board)
+{
+    int result = 0; // play on
     switch (action)
     {
         case UP:
@@ -307,8 +363,52 @@ void handle_input(Input action, Board *board)
                 cursor_x++;
             break;
         case REVEAL:
+            // Checking if lost
+            if (board->tiles[cursor_y][cursor_x] == MINE)
+            {
+                if (first_tile)        // If gameover on very first tile, then cut player some slack
+                {
+                    printf("RELOCATING!\n");
+                    relocate_mine(board, cursor_y, cursor_x); 
+                }
+                else                   // Otherwise... you lost
+                {
+                    reveal_all(board); // Reveal all tiles on the board
+                    result = 1;        // MINE HAS BEEN HIT! END GAME!
+                    break;
+                }
+            }
+            // Reveal what's underneath the tile
             reveal(board, cursor_y, cursor_x);
+            first_tile = 0; // First tile is unearthed, therefor gameover possible
+
+            // Checking if won
+            int won = 1; // Proof by contradiction flag
+            for (int x = 0; x < GAME_SIZE; x++)
+            {
+                for (int y = 0; y < GAME_SIZE; y++)
+                {
+                    // If there are fogged up non-bomb tiles then we haven't won
+                    if (board->overlays[x][y] == FOG && board->tiles[x][y] != MINE)
+                    {
+                        won = 0; 
+                        break;
+                    }
+                    // If there are false positive flags, then we haven't won
+                    else if (board->overlays[x][y] == FLAG && board->tiles[x][y] != MINE)
+                    {
+                        won = 0; 
+                        break;
+                    }
+                }
+                if (!won) // break out of both loops if flag is set
+                    break;
+            }
+            if (won)
+                result = 2;
+
             break;
+
         case TOGGLEFLAG:
             if (board->overlays[cursor_y][cursor_x] == FOG)
                 board->overlays[cursor_y][cursor_x] = FLAG;
@@ -316,6 +416,7 @@ void handle_input(Input action, Board *board)
                 board->overlays[cursor_y][cursor_x] = FOG;
             break;
     }
+    return result; // 0 = play on, 1 = lost, 2 = won
 }
 
 //*****************************************************************************
@@ -348,7 +449,7 @@ void print_game(Board board)
                 case FLAG: 
                     result = 'F';
                     break;
-            }
+                }
             printf(" %c", result);
         }
         printf("\n");

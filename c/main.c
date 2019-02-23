@@ -1,5 +1,4 @@
 #include <SDL.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,16 +27,18 @@ int main(int argc, char* args[])
     // Main Loop
     int cursor_x = get_cursor_x();
     int cursor_y = get_cursor_y();
-    render(board, cursor_x, cursor_y);
-    bool quit = false;
+    int quit = 0; // quit application
+    int  end = 0; // 0 = game is on, 1 = game over (lost), 2 = game over (won)
     SDL_Event event;
+
+    render(board, cursor_x, cursor_y, end);
     while (!quit)
     {
         while (SDL_PollEvent(&event) != 0)
         {
             if (event.type == SDL_QUIT)          // If window closed
             {
-                quit = true;
+                quit = 1;
             }
             else if (event.type == SDL_KEYDOWN)  // If key pressed
             {
@@ -45,15 +46,15 @@ int main(int argc, char* args[])
                 {
                     // System events
                     case SDLK_q:
-                        quit = true;
+                        quit = 1;
                         break;
                     // Board events
                     default:
-                        update(event, &board);
+                        end = update(event, &board);
                 }
                 cursor_x = get_cursor_x();
                 cursor_y = get_cursor_y();
-                render(board, cursor_x, cursor_y);
+                render(board, cursor_x, cursor_y, end);
             }
         }
                
