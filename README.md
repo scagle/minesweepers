@@ -1,4 +1,4 @@
-# mine-sweepers
+# minesweepers
 Challenge to program minesweeper in several different programming languages. Each directory represents a different programming language. 
 
 ## Complete
