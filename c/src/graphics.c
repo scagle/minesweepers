@@ -123,14 +123,14 @@ int graphics_init()
     won.surface = TTF_RenderText_Solid(won.font, won.text, won.color);
     won.message = SDL_CreateTextureFromSurface(renderer, won.surface);
 
-    for (char i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++)
     {
         // tile #0 is included just in case a debugging situation arises (normally it's invisible/blank)
         // tile #9 is a mine so "M"
         char str[2];  // length is 2, because <one-digit-number> + \0 zero terminator
-        sprintf(str, "%c", i);
+        sprintf(str, "%d", i);
         if (i != 9)
-            sprintf(str, "%c", i);
+            sprintf(str, "%d", i);
         else
             sprintf(str, "%s", "M");
 
