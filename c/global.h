@@ -1,10 +1,12 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#define GAME_SIZE      40 // How many squares on game board? ( x + y  )
-#define NUM_MINES     200 // How many mines on game board?   ( total  )
-#define SCREEN_WIDTH  600 // How many pixels on screen?      ( width  )
-#define SCREEN_HEIGHT 480 // How many pixels on screen?      ( height )
+#define GAME_SIZE       40 // How many squares on game board? ( x + y  )
+#define NUM_MINES      200 // How many mines on game board?   ( total  )
+#define SCREEN_WIDTH  1400 // How many pixels on screen?      ( width  )
+#define SCREEN_HEIGHT 1400 // How many pixels on screen?      ( height )
+
+// Green, Pink, Red, Orange
 
 typedef enum Inputs
 {
@@ -13,7 +15,7 @@ typedef enum Inputs
     LEFT      , // 2
     RIGHT     , // 3
     REVEAL    , // 4
-    PLACEFLAG   // 5
+    TOGGLEFLAG  // 5
 } Input;
 
 typedef enum Tiles

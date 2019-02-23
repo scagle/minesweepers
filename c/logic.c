@@ -22,8 +22,6 @@ Board create_board()
 
 void board_init(Board *board)
 {
-    cursor_x = CURSOR_X_START;
-    cursor_y = CURSOR_Y_START;
     srand(time(NULL));
     int x, y;
     // Wipe board
@@ -74,36 +72,33 @@ void update(SDL_Event event, Board *board)
     {
         // Movement
         case SDLK_w:                 // Move Up
-            printf("Move Up\n");
             handle_input(UP, board);
             break;
         case SDLK_a:                 // Move Left
-            printf("Move Left\n");
             handle_input(LEFT, board);
             break;
         case SDLK_s:                 // Move Down
-            printf("Move Down\n");
             handle_input(DOWN, board);
             break;
         case SDLK_d:                 // Move Right
-            printf("Move Right\n");
             handle_input(RIGHT, board);
             break;
         // Actions
-        case SDLK_f:                 // Reveal
-            printf("Reveal\n");
+        case SDLK_p:                 // Reveal
             handle_input(REVEAL, board);
+            break;
+        case SDLK_o:                 // Toggle Flag
+            handle_input(TOGGLEFLAG, board);
             break;
         // Extras 
         case SDLK_r:                 // Restart
             printf("Restart\n");
-            handle_input(REVEAL, board);
             *board = create_board();
             board_init(board);
             break;
-        case SDLK_p:                 // Print board (debugging)
-            print_game(*board);
-            break;
+        //case SDLK_p:                 // Print board (debugging)
+        //    print_game(*board);
+        //    break;
     }
 }
 
@@ -201,6 +196,9 @@ void reveal(Board *board, int x, int y)
 {
     // My recursive method of revealing tiles
     //   (recursive because we want to lift "fog" from all clear tiles nearby)
+    if (board->overlays[x][y] == FLAG)
+        return;  // Don't allow us to reveal a flagged tile
+
     board->overlays[x][y] = CLEAR;
     if (board->tiles[x][y] == NONE) // If blank, keep checking for adjacent non-mines
     {
@@ -311,9 +309,11 @@ void handle_input(Input action, Board *board)
         case REVEAL:
             reveal(board, cursor_y, cursor_x);
             break;
-        case PLACEFLAG:
+        case TOGGLEFLAG:
             if (board->overlays[cursor_y][cursor_x] == FOG)
                 board->overlays[cursor_y][cursor_x] = FLAG;
+            else if (board->overlays[cursor_y][cursor_x] == FLAG)
+                board->overlays[cursor_y][cursor_x] = FOG;
             break;
     }
 }

@@ -26,8 +26,9 @@ int main(int argc, char* args[])
     board_init(&board);
 
     // Main Loop
-    int cursor_x = 0;
-    int cursor_y = 0;
+    int cursor_x = get_cursor_x();
+    int cursor_y = get_cursor_y();
+    render(board, cursor_x, cursor_y);
     bool quit = false;
     SDL_Event event;
     while (!quit)
