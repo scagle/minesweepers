@@ -16,7 +16,7 @@ int main(int argc, char* args[])
     int error = graphics_init();
     if (error)
     {
-        printf("Initialization failed!");
+        printf("Initialization failed!\n");
         return 1;
     }
 

@@ -1,12 +1,16 @@
 cmake_minimum_required (VERSION 3.0)
 
-project(minesweeper_c)
+project(minesweeper)
 
-set(SOURCES logic.c logic.h graphics.c graphics.h global.h main.c)
+# Finds all source files in source
+file(   GLOB SOURCES
+        "${PROJECT_SOURCE_DIR}/src/*.h"
+        "${PROJECT_SOURCE_DIR}/src/*.c"
+    )
 
 # Grabbed CMAKE_MODULE_PATH manipulations and ./cmake/FindSDL2_ttf.cmake from:
 #   https://stackoverflow.com/questions/37817717/sdl2-library-not-found-with-make-but-with-cmake
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${minesweeper_c_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 # Debugging
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")

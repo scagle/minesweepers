@@ -80,13 +80,17 @@ int graphics_init()
         return 1;
     }
     // Initialize SDL_ttf Components
-    TTF_Font* header_font   = TTF_OpenFont("./fonts/OpenSans/OpenSans-Bold.ttf", 50); //this opens a font style and sets a size
-    TTF_Font* footer_font   = TTF_OpenFont("./fonts/OpenSans/OpenSans-Bold.ttf", 24); //this opens a font style and sets a size
-    TTF_Font*   tile_font   = TTF_OpenFont("./fonts/OpenSans/OpenSans-Bold.ttf", 50); //this opens a font style and sets a size
-    TTF_Font* gameover_font = TTF_OpenFont("./fonts/OpenSans/OpenSans-Regular.ttf", 50); //this opens a font style and sets a size
+    TTF_Font* header_font   = TTF_OpenFont("../fonts/OpenSans/OpenSans-Bold.ttf", 50); //this opens a font style and sets a size
+    TTF_Font* footer_font   = TTF_OpenFont("../fonts/OpenSans/OpenSans-Bold.ttf", 24); //this opens a font style and sets a size
+    TTF_Font*   tile_font   = TTF_OpenFont("../fonts/OpenSans/OpenSans-Bold.ttf", 50); //this opens a font style and sets a size
+    TTF_Font* gameover_font = TTF_OpenFont("../fonts/OpenSans/OpenSans-Bold.ttf", 50); //this opens a font style and sets a size
 
     if (header_font == NULL || footer_font == NULL || tile_font == NULL || gameover_font == NULL)
+    {
         printf("TTF_Font Error : %s\n", TTF_GetError());
+        printf("***NOTE: program assumes present working directory is '<project_root>/c/build/')\n");
+        return 1;
+    }
 
     // Initialize header text object
     sprintf(header.text, "Minesweeper");

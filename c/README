@@ -1,4 +1,15 @@
 Dependencies:
+* SDL2
+* SDL2_ttf
 
-Compiliation: (Verified using Arch Linux) 
-    g++ -o main.out main.c 
+**Compilation:**
+* change directory into build/
+```cmake
+$ cmake ../
+$ make
+```
+**Execution:**
+* change directory into build/
+```bash
+$ ./minesweeper 
+```
