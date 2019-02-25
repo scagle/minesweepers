@@ -11,7 +11,6 @@
 
 int main(int argc, char* args[])
 {
-    // TODO: Incorporate Rendering of SDL
     // Graphics Initializations
     int error = graphics_init();
     if (error)

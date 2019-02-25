@@ -366,7 +366,6 @@ int handle_input(Input action, Board *board)
             {
                 if (first_tile)        // If gameover on very first tile, then cut player some slack
                 {
-                    printf("RELOCATING!\n");
                     relocate_mine(board, cursor_y, cursor_x); 
                 }
                 else                   // Otherwise... you lost

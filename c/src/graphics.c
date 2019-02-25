@@ -98,26 +98,26 @@ int graphics_init()
     }
 
     // Initialize header text object
-    sprintf(header.text, "%s", "Minesweeper");
+    snprintf(header.text, sizeof(header.text), "%s", "Minesweeper");
     header.font    = header_font;
     header.color   = HEADER_COLOR; // Defined in graphics.h
     header.surface = TTF_RenderText_Solid(header.font, header.text, header.color);
     header.message = SDL_CreateTextureFromSurface(renderer, header.surface);
 
     // Initialize footer text object
-    sprintf(footer.text, "%s", "'w', 'a', 's', 'd' = move cursor | 'p' = reveal tile | 'o' = place flag | 'r' = restart game");
+    snprintf(footer.text, sizeof(footer.text), "%s", "'w', 'a', 's', 'd' = move cursor | 'p' = reveal tile | 'o' = place flag | 'r' = restart game");
     footer.font    = footer_font;
     footer.color   = FOOTER_COLOR; // Defined in graphics.h
     footer.surface = TTF_RenderText_Solid(footer.font, footer.text, footer.color);
     footer.message = SDL_CreateTextureFromSurface(renderer, footer.surface);
 
-    sprintf(gameover.text, "%s", "GAME OVER!");
+    snprintf(gameover.text, sizeof(gameover.text), "%s", "GAME OVER!");
     gameover.font    = header_font;
     gameover.color   = RED; // Defined in graphics.h
     gameover.surface = TTF_RenderText_Solid(gameover.font, gameover.text, gameover.color);
     gameover.message = SDL_CreateTextureFromSurface(renderer, gameover.surface);
 
-    sprintf(won.text, "%s", "YOU WON!");
+    snprintf(won.text, sizeof(won.text), "%s", "YOU WON!");
     won.font    = header_font;
     won.color   = GREEN; // Defined in graphics.h
     won.surface = TTF_RenderText_Solid(won.font, won.text, won.color);
@@ -128,13 +128,13 @@ int graphics_init()
         // tile #0 is included just in case a debugging situation arises (normally it's invisible/blank)
         // tile #9 is a mine so "M"
         char str[2];  // length is 2, because <one-digit-number> + \0 zero terminator
-        sprintf(str, "%d", i);
+        snprintf(str, sizeof(str), "%d", i);
         if (i != 9)
-            sprintf(str, "%d", i);
+            snprintf(str, sizeof(str), "%d", i);
         else
-            sprintf(str, "%s", "M");
+            snprintf(str, sizeof(str), "%s", "M");
 
-        sprintf(tile_objects[i].text, "%s", str);
+        snprintf(tile_objects[i].text, sizeof(tile_objects[i].text), "%s", str);
         tile_objects[i].font    = tile_font; 
         tile_objects[i].color   = TILE_COLORS[i];
         tile_objects[i].surface = TTF_RenderText_Solid(tile_font, str, TILE_COLORS[i]);
